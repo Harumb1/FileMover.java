@@ -5,8 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
 
 public class MyFrame extends JFrame {
     public MyFrame() {
@@ -41,21 +41,24 @@ public class MyFrame extends JFrame {
 
             // Add action listeners
 
-        frombutton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int response = from.showOpenDialog(null);
-                if(response == JFileChooser.APPROVE_OPTION){
-                    File[] files = new File(from.getSelectedFile().getAbsolutePath()).listFiles();
-                    moveTo.setText(Arrays.toString(files));
-                    String fileNames = "";
-                    for(File file: files){
-                        fileNames += file.getName() + " ";
-                    }
+            frombutton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    int response = from.showOpenDialog(null);
+                    if(response == JFileChooser.APPROVE_OPTION){
 
+                        File[] files = from.getSelectedFiles();
+                        String[] filenames = new String[files.length];
+                        for(int i = 0; i < files.length; i++){
+                            //filenames[0] = "a + b";
+                            filenames[i] = files[i].getAbsolutePath();
+                        }
+                        String mftext = String.join("?", filenames);
+                        moveFrom.setText(mftext);
+
+                    }
                 }
-            }
-        });
+            });
 
 //            frombutton.addActionListener(new ActionListener() {
 //                @Override
@@ -83,19 +86,35 @@ public class MyFrame extends JFrame {
             move.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    Path currentPath = Path.of(moveFrom.getText());
-                    Path newPath = Path.of(moveTo.getText());
-                    Path targetPath = newPath.resolve(currentPath.getFileName());
-                    if (!Files.exists(targetPath)) {
-                        System.out.println("File moved successfully!");
+
+                    String unSplit = moveFrom.getText();
+                    String targetDir = moveTo.getText();
+                    String[] filePaths = unSplit.split("\\?");
+                    for(int i = 0; i < filePaths.length; i++){
+                        File f = new File(filePaths[i]);
+                        String name = f.getName();
+
+                        Path newFilePath = Paths.get(targetDir, name);
                         try {
-                            Files.move(currentPath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+                            Files.move(f.getAbsoluteFile().toPath(), newFilePath, StandardCopyOption.REPLACE_EXISTING);
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
-                    } else {
-                        System.out.println("This file already exists in this directory!");
                     }
+
+//                    Path currentPath = Path.of(moveFrom.getText());
+//                    Path newPath = Path.of(moveTo.getText());
+//                    Path targetPath = newPath.resolve(currentPath.getFileName());
+//                    if (!Files.exists(targetPath)) {
+//                        System.out.println("File moved successfully!");
+//                        try {
+//                            Files.move(currentPath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+//                        } catch (IOException ex) {
+//                            throw new RuntimeException(ex);
+//                        }
+//                    } else {
+//                        System.out.println("This file already exists in this directory!");
+//                    }
                 }
             });
 
@@ -108,7 +127,6 @@ public class MyFrame extends JFrame {
         });
 
     }
-
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             MyFrame frame = new MyFrame();
