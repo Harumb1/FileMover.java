@@ -20,7 +20,7 @@ public class MyFrame extends JFrame {
 
             JFileChooser from = new JFileChooser();
             JFileChooser to = new JFileChooser();
-            from.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            from.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
             from.setMultiSelectionEnabled(true);
             to.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
