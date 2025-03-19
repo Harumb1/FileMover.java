@@ -45,11 +45,10 @@ public class MyFrame extends JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     int response = from.showOpenDialog(null);
-                    if(response == JFileChooser.APPROVE_OPTION){
-
+                    if (response == JFileChooser.APPROVE_OPTION) {
                         File[] files = from.getSelectedFiles();
                         String[] filenames = new String[files.length];
-                        for(int i = 0; i < files.length; i++){
+                        for (int i = 0; i < files.length; i++) {
                             //filenames[0] = "a + b";
                             filenames[i] = files[i].getAbsolutePath();
                         }
@@ -59,18 +58,6 @@ public class MyFrame extends JFrame {
                     }
                 }
             });
-
-//            frombutton.addActionListener(new ActionListener() {
-//                @Override
-//                public void actionPerformed(ActionEvent e) {
-//                    int response = from.showOpenDialog(null);
-//                    if (response == JFileChooser.APPROVE_OPTION) {
-//                        File file = new File(from.getSelectedFile().getAbsolutePath());
-//                        moveFrom.setText(String.valueOf(file));
-//                    }
-//                }
-//            });
-
 
             tobutton.addActionListener(new ActionListener() {
                 @Override
@@ -90,31 +77,23 @@ public class MyFrame extends JFrame {
                     String unSplit = moveFrom.getText();
                     String targetDir = moveTo.getText();
                     String[] filePaths = unSplit.split("\\?");
-                    for(int i = 0; i < filePaths.length; i++){
+                    for (int i = 0; i < filePaths.length; i++) {
                         File f = new File(filePaths[i]);
                         String name = f.getName();
 
                         Path newFilePath = Paths.get(targetDir, name);
-                        try {
-                            Files.move(f.getAbsoluteFile().toPath(), newFilePath, StandardCopyOption.REPLACE_EXISTING);
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
+                        if (!Files.exists(newFilePath)) {
+                            System.out.println("File moved successfully!");
+                            try {
+                                Files.move(f.getAbsoluteFile().toPath(), newFilePath, StandardCopyOption.REPLACE_EXISTING);
+                            } catch (IOException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                        } else {
+                            System.out.println("This file already exists in this directory!");
                         }
-                    }
 
-//                    Path currentPath = Path.of(moveFrom.getText());
-//                    Path newPath = Path.of(moveTo.getText());
-//                    Path targetPath = newPath.resolve(currentPath.getFileName());
-//                    if (!Files.exists(targetPath)) {
-//                        System.out.println("File moved successfully!");
-//                        try {
-//                            Files.move(currentPath, targetPath, StandardCopyOption.REPLACE_EXISTING);
-//                        } catch (IOException ex) {
-//                            throw new RuntimeException(ex);
-//                        }
-//                    } else {
-//                        System.out.println("This file already exists in this directory!");
-//                    }
+                    }
                 }
             });
 
@@ -125,8 +104,8 @@ public class MyFrame extends JFrame {
             add(tobutton);
             add(move);
         });
-
     }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             MyFrame frame = new MyFrame();
